@@ -1,0 +1,20 @@
+{
+  "core": {
+    "auth0": {
+      "slack-login": {
+        "client": {
+          "id": "",
+          "secret": ""
+        }
+      }
+    }
+  },
+	"auth0": {
+		"api": {
+			"clientId": "",
+			"clientSecret": ""
+		},
+		"clientId": "",
+		"domain": ""
+	}
+}

@@ -1,0 +1,29 @@
+{
+  "name": "core-auth0-config-repo",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --reporter spec",
+    "deploy": "npm test && npm run build && node dist/index.js",
+    "build": "rimraf dist/ && babel ./deploy --out-dir dist/ --ignore ./node_modules,./.babelrc,./package.json,./npm-debug.log --copy-files"
+  },
+  "author": "David Esposito <david.esposito@bettercloud.com> (https://github.com/david-bc)",
+  "license": "ISC",
+  "dependencies": {
+    "chai": "^4.1.1",
+    "fs": "0.0.1-security",
+    "lodash": "^4.17.4",
+    "mocha": "^3.5.0",
+    "path": "^0.12.7",
+    "request": "^2.81.0",
+    "underscore": "^1.8.3"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-es2016": "^6.24.1",
+    "babel-preset-es2017": "^6.24.1",
+    "rimraf": "^2.6.1"
+  }
+}
