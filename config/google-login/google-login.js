@@ -17,9 +17,9 @@ exports.fetchUserProfile = function(accessToken, ctx, cb) {
 
   if (!_.isPlainObject(payload)) {
     cb(new Error('BC-GOO-0001: Invalid id token format'), null)
-  } if (!payload.sub) {
+  } else if (!payload.sub) {
     cb(new Error('BC-OA-0001: Missing user ID'), null)
-  } if (!payload.hd) {
+  } else if (!payload.hd) {
     cb(new Error('BC-OA-0002: Missing tenant ID'), null)
   } else {
     cb(null, {

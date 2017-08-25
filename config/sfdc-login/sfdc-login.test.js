@@ -4,19 +4,16 @@ var uuid = require('uuid');
 var jwt = require('jsonwebtoken');
 var _ = require('lodash');
 
-var fetchUserProfile = require('./slack-login').fetchUserProfile;
+var fetchUserProfile = require('./sfdc-login').fetchUserProfile;
 
 var expect = chai.expect;
-var providerKey = 'slack';
+var providerKey = 'salesforce';
 
 function getExpected(userId, tenantId, name, email, accessToken) {
   return {
     pro: providerKey,
-    //ac: accessToken, // TODO: should this connector return the token?
     uid: userId,
-    tid: tenantId,
-    name: name,
-    email: email
+    tid: tenantId
   }
 }
 
@@ -26,14 +23,14 @@ function getExpected(userId, tenantId, name, email, accessToken) {
  */
 function getCtx(userId, tenantId, name, email) {
   return {
-    user: {
-      id: userId,
-      name: name,
-      email: email
-    },
-    team: {
-      id: tenantId
-    }
+    "signature": "gFNR2+nRGxItY2ItPy6eH0eYxp6vhSNXhRGFWDK6Fdg=",
+    "scope": "openid id",
+    "id_token": '<some jwt value>',
+    "instance_url": "https://na59.salesforce.com",
+    "id": "https://login.salesforce.com/id/" + _.defaultTo(tenantId, '') +
+        "/" + _.defaultTo(userId, ''),
+    "token_type": "Bearer",
+    "issued_at": "1503698679556"
   }
 }
 
@@ -44,7 +41,7 @@ function getData(userId, tenantId, name, email, accessToken) {
   }
 }
 
-describe('slack-login', function() {
+describe('sfdc-login', function() {
 
   describe('provider specific', function() {
 
@@ -52,35 +49,35 @@ describe('slack-login', function() {
 
     describe('sad paths', function() {
 
-       it('should fail gracefully when missing user', function(testCallback) {
-         var tkn = uuid();
-         var data = getData(undefined, 'tenantId', 'name', 'email', tkn);
-         var ctx = data.input;
-         delete ctx.user
-         var cb = function(error, actual) {
-           expect(error).to.exist;
-           expect(error.message).to.equal('BC-SLK-0001: Missing user')
-           expect(actual).to.be.null;
-           testCallback();
-         }
+      it('should fail gracefully when missing identifier', function(testCallback) {
+        var tkn = uuid();
+        var data = getData(undefined, 'tenantId', 'name', 'email', tkn);
+        var ctx = data.input;
+        delete ctx.id
+        var cb = function(error, actual) {
+          expect(error).to.exist;
+          expect(error.message).to.equal('BC-SFDC-0000: Invalid missing identifier')
+          expect(actual).to.be.null;
+          testCallback();
+        }
 
-         fetchUserProfile(tkn, ctx, cb);
-       });
+        fetchUserProfile(tkn, ctx, cb);
+      });
 
-          it('should fail gracefully when missing team', function(testCallback) {
-            var tkn = uuid();
-            var data = getData(undefined, 'tenantId', 'name', 'email', tkn);
-            var ctx = data.input;
-            delete ctx.team
-            var cb = function(error, actual) {
-              expect(error).to.exist;
-              expect(error.message).to.equal('BC-SLK-0002: Missing tenant')
-              expect(actual).to.be.null;
-              testCallback();
-            }
+        it('should fail gracefully when malformed identifier', function(testCallback) {
+          var tkn = uuid();
+          var data = getData(undefined, 'tenantId', 'name', 'email', tkn);
+          var ctx = data.input;
+          ctx.id = 'testing :)'
+          var cb = function(error, actual) {
+            expect(error).to.exist;
+            expect(error.message).to.equal('BC-SFDC-0001: Invalid identifier format')
+            expect(actual).to.be.null;
+            testCallback();
+          }
 
-            fetchUserProfile(tkn, ctx, cb);
-          });
+          fetchUserProfile(tkn, ctx, cb);
+        });
 
     });
 

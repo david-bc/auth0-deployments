@@ -7,7 +7,6 @@ var _ = require('lodash');
 var fetchUserProfile = require('./google-login').fetchUserProfile;
 
 var expect = chai.expect;
-var fetchUserProfile = SlackLogin.fetchUserProfile;
 var providerKey = 'google';
 
 function getExpected(userId, tenantId, name, email, accessToken) {

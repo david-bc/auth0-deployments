@@ -13,7 +13,7 @@ exports.fetchUserProfile = function(accessToken, ctx, cb) {
 
   if (!uid) {
     cb(new Error('BC-OA-0001: Missing user ID'), null)
-  } if (!tid) {
+  } else if (!tid) {
     cb(new Error('BC-OA-0002: Missing tenant ID'), null)
   } else {
     var profile = {
