@@ -63,7 +63,7 @@ function init() {
 }
 
 function getCurrentConfig(config) {
-  return configCache[config.cfg.value.name]
+  return configCache[config.cfg.name]
 }
 
 function createConfig(config) {
@@ -129,22 +129,26 @@ function upsertConfig(config) {
   })
   .then(() => {
     const curr = getCurrentConfig(config);
+    // TODO: possible to add deployment version to options?
     return new Promise((resolve, reject) => {
       if (_.isNil(curr)) {
-        // insert
-        createConfig(config).then(newConfig => {
-          // TODO: handle error
-          resolve({
+        createConfig(config).then(
+          newConfig => resolve({
             outcome: 'SUCCESS',
             method: 'CREATE',
             id: newConfig.id,
             name: newConfig.name,
             errors: []
+          }),
+          err => reject({
+            outcome: 'FAILURE',
+            method: 'CREATE',
+            id: null,
+            name: config.cfg.name,
+            errors: []
           })
-        }, (err) => console.error(err));
+        );
       } else {
-        // update
-        // TODO: track down the update flow bug
         const expected = _.cloneDeep(curr);
         const actual = _.cloneDeep(config.payload);
         actual.id = expected.id
@@ -161,7 +165,6 @@ function upsertConfig(config) {
             errors: ['Attempting to modify invalid field']
           })
         } else {
-          console.log("VALID: sending update");
           updateConfig(config, curr.id).then(
             (savedConfig) => resolve({
                 outcome: 'SUCCESS',

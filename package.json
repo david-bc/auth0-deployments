@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha --reporter spec",
-    "deploy": "npm test && npm run build && node dist/index.js",
+    "deploy": "npm run build && node dist/index.js",
     "build": "rimraf dist/ && babel ./deploy --out-dir dist/ --ignore ./node_modules,./.babelrc,./package.json,./npm-debug.log --copy-files"
   },
   "author": "David Esposito <david.esposito@bettercloud.com> (https://github.com/david-bc)",
@@ -17,7 +17,8 @@
     "mocha": "^3.5.0",
     "path": "^0.12.7",
     "request": "^2.81.0",
-    "underscore": "^1.8.3"
+    "underscore": "^1.8.3",
+    "uuid": "^3.1.0"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",

@@ -1,20 +1,19 @@
 require('underscore');
 var chai = require('chai');
 var uuid = require('uuid');
-var SlackLogin = require('./<%= name %>');
+var SlackLogin = require('./slack-conn');
 
 var expect = chai.expect;
 var fetchUserProfile = SlackLogin.fetchUserProfile;
-var providerKey = '<%= name %>';
+var providerKey = 'slack-conn';
 
 function getExpected(userId, tenantId, name, email, accessToken) {
   return {
     pro: providerKey,
-    //ac: accessToken, // TODO: should this connector return the token?
+    ac: accessToken,
     uid: userId,
     tid: tenantId,
-    name: name,
-    email: email
+    name: name
   }
 }
 
@@ -24,10 +23,9 @@ function getExpected(userId, tenantId, name, email, accessToken) {
  */
 function getCtx(userId, tenantId, name, email) {
   return {
-    userId: userId,
-    tenantId: tenantId,
-    name: name,
-    email: email
+    user_id: userId,
+    team_id: tenantId,
+    name: name
   }
 }
 
@@ -38,31 +36,13 @@ function getData(userId, tenantId, name, email, accessToken) {
   }
 }
 
-describe('<%= name %>', function() {
+describe('slack-conn', function() {
 
   describe('provider specific', function() {
 
-    describe('happy paths', function() {
+    describe('happy paths', function() { });
 
-      /**
-       *    TODO: Add happy path tests
-       */
-      it('should be replaced with real tests', function(testCallback) {
-        throw new Error("placeholder test should be replaced");
-      });
-
-    });
-
-    describe('sad paths', function() {
-
-      /**
-       *    TODO: Add sad path tests (graceful failure)
-       */
-      it('should be replaced with real tests', function(testCallback) {
-        throw new Error("placeholder test should be replaced");
-      });
-
-    });
+    describe('sad paths', function() { });
 
   });
 

@@ -49,7 +49,7 @@ const getConfigFilesContent = (filenames) => {
 const processConfigs = (configs) => configs.map(processConfig)
 
 const processConfig = (config) => {
-  const p = _.assignIn({}, config.cfg.value)
+  const p = _.assignIn({}, config.cfg)
   p.options.scripts.fetchUserProfile = config.src
   p.options.client_id = Settings.getSecret(p.options.client_id)
   p.options.client_secret = Settings.getSecret(p.options.client_secret)

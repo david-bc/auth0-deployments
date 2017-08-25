@@ -7,10 +7,10 @@
     },
     "authorizationURL": "https://slack.com/oauth/authorize",
     "tokenURL": "https://slack.com/api/oauth.access",
-    "scope": "identity.basic identity.email identity.avatar"
+    "scope": "users.profile:read  admin files:read pins:write"
   },
   "strategy": "oauth2",
-  "name": "slack-login",
+  "name": "slack-conn",
   "enabled_clients": "auth0.clientId",
   "is_domain_connection": false,
   "realms": []

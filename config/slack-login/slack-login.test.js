@@ -1,14 +1,16 @@
 require('underscore');
 var chai = require('chai');
-var SlackLogin = require('../slack-login/slack-login');
+var uuid = require('uuid');
+var SlackLogin = require('./slack-login');
 
 var expect = chai.expect;
 var fetchUserProfile = SlackLogin.fetchUserProfile;
-var providerKey = 'slack';
+var providerKey = 'slack-login';
 
-function getExpected(userId, tenantId, name, email) {
+function getExpected(userId, tenantId, name, email, accessToken) {
   return {
     pro: providerKey,
+    //ac: accessToken, // TODO: should this connector return the token?
     uid: userId,
     tid: tenantId,
     name: name,
@@ -16,6 +18,10 @@ function getExpected(userId, tenantId, name, email) {
   }
 }
 
+/**
+ *    TODO: Update this to return the same structure as the
+ *          OAuth SaaS provider.
+ */
 function getCtx(userId, tenantId, name, email) {
   return {
     user: {
@@ -29,22 +35,62 @@ function getCtx(userId, tenantId, name, email) {
   }
 }
 
-function getData(userId, tenantId, name, email) {
+function getData(userId, tenantId, name, email, accessToken) {
   return {
     input: getCtx(userId, tenantId, name, email),
-    expected: getExpected(userId, tenantId, name, email)
+    expected: getExpected(userId, tenantId, name, email, accessToken)
   }
 }
 
 describe('slack-login', function() {
+
+  describe('provider specific', function() {
+
+    describe('happy paths', function() { });
+
+    describe('sad paths', function() {
+
+       it('should fail gracefully when missing user', function(testCallback) {
+         var tkn = uuid();
+         var data = getData(undefined, 'tenantId', 'name', 'email', tkn);
+         var ctx = data.input;
+         delete ctx.user
+         var cb = function(error, actual) {
+           expect(error).to.exist;
+           expect(error.message).to.equal('BC-SLK-0001: Missing user')
+           expect(actual).to.be.null;
+           testCallback();
+         }
+
+         fetchUserProfile(tkn, ctx, cb);
+       });
+
+          it('should fail gracefully when missing team', function(testCallback) {
+            var tkn = uuid();
+            var data = getData(undefined, 'tenantId', 'name', 'email', tkn);
+            var ctx = data.input;
+            delete ctx.team
+            var cb = function(error, actual) {
+              expect(error).to.exist;
+              expect(error.message).to.equal('BC-SLK-0002: Missing tenant')
+              expect(actual).to.be.null;
+              testCallback();
+            }
+
+            fetchUserProfile(tkn, ctx, cb);
+          });
+
+    });
+
+  });
 
   describe('common OAuth', function() {
 
     describe('happy paths', function() {
 
       it('should return all fields when the full user is presented', function(testCallback) {
-        var data = getData('userId', 'tenantId', 'name', 'email');
-        var tkn = '';
+        var tkn = uuid();
+        var data = getData('userId', 'tenantId', 'name', 'email', tkn, tkn);
         var ctx = data.input;
         var cb = function(error, actual) {
           expect(error).to.be.null;
@@ -56,8 +102,8 @@ describe('slack-login', function() {
       });
 
       it('should not fail when missing email', function(testCallback) {
-        var data = getData('userId', 'tenantId', 'name', undefined);
-        var tkn = '';
+        var tkn = uuid();
+        var data = getData('userId', 'tenantId', 'name', undefined, tkn);
         var ctx = data.input;
         var cb = function(error, actual) {
           expect(error).to.be.null;
@@ -69,8 +115,8 @@ describe('slack-login', function() {
       });
 
       it('should not fail when email is null', function(testCallback) {
-        var data = getData('userId', 'tenantId', 'name', null);
-        var tkn = '';
+        var tkn = uuid();
+        var data = getData('userId', 'tenantId', 'name', null, tkn);
         var ctx = data.input;
         var cb = function(error, actual) {
           expect(error).to.be.null;
@@ -82,8 +128,8 @@ describe('slack-login', function() {
       });
 
       it('should not fail when missing name', function(testCallback) {
-        var data = getData('userId', 'tenantId', undefined, 'email');
-        var tkn = '';
+        var tkn = uuid();
+        var data = getData('userId', 'tenantId', undefined, 'email', tkn);
         var ctx = data.input;
         var cb = function(error, actual) {
           expect(error).to.be.null;
@@ -95,8 +141,8 @@ describe('slack-login', function() {
       });
 
       it('should not fail when name is null', function(testCallback) {
-        var data = getData('userId', 'tenantId', null, 'email');
-        var tkn = '';
+        var tkn = uuid();
+        var data = getData('userId', 'tenantId', null, 'email', tkn);
         var ctx = data.input;
         var cb = function(error, actual) {
           expect(error).to.be.null;
@@ -111,13 +157,27 @@ describe('slack-login', function() {
 
     describe('sad paths', function() {
 
+      it('should fail gracefully when missing authentication information', function(testCallback) {
+        var tkn = uuid();
+        var data = getData(undefined, 'tenantId', 'name', 'email', tkn);
+        var ctx = null;
+        var cb = function(error, actual) {
+          expect(error).to.exist;
+          expect(error.message).to.equal('BC-OA-0000: Invalid missing authentication information')
+          expect(actual).to.be.null;
+          testCallback();
+        }
+
+        fetchUserProfile(tkn, ctx, cb);
+      });
+
       it('should fail gracefully when missing user id', function(testCallback) {
-        var data = getData(undefined, 'tenantId', 'name', 'email');
-        var tkn = '';
+        var tkn = uuid();
+        var data = getData(undefined, 'tenantId', 'name', 'email', tkn);
         var ctx = data.input;
         var cb = function(error, actual) {
           expect(error).to.exist;
-          expect(error.message).to.equal('BC-OA-0000: Missing user ID')
+          expect(error.message).to.equal('BC-OA-0001: Missing user ID')
           expect(actual).to.be.null;
           testCallback();
         }
@@ -126,12 +186,12 @@ describe('slack-login', function() {
       });
 
       it('should fail gracefully when user id is null', function(testCallback) {
-        var data = getData(null, 'tenantId', 'name', 'email');
-        var tkn = '';
+        var tkn = uuid();
+        var data = getData(null, 'tenantId', 'name', 'email', tkn);
         var ctx = data.input;
         var cb = function(error, actual) {
           expect(error).to.exist;
-          expect(error.message).to.equal('BC-OA-0000: Missing user ID')
+          expect(error.message).to.equal('BC-OA-0001: Missing user ID')
           expect(actual).to.be.null;
           testCallback();
         }
@@ -140,12 +200,12 @@ describe('slack-login', function() {
       });
 
       it('should fail gracefully when missing tenant id', function(testCallback) {
-        var data = getData('userId', undefined, 'name', 'email');
-        var tkn = '';
+        var tkn = uuid();
+        var data = getData('userId', undefined, 'name', 'email', tkn);
         var ctx = data.input;
         var cb = function(error, actual) {
           expect(error).to.exist;
-          expect(error.message).to.equal('BC-OA-0001: Missing tenant ID')
+          expect(error.message).to.equal('BC-OA-0002: Missing tenant ID')
           expect(actual).to.be.null;
           testCallback();
         }
@@ -154,50 +214,12 @@ describe('slack-login', function() {
       });
 
       it('should fail gracefully when tenant id is null', function(testCallback) {
-        var data = getData('userId', undefined, 'name', 'email');
-        var tkn = '';
+        var tkn = uuid();
+        var data = getData('userId', undefined, 'name', 'email', tkn);
         var ctx = data.input;
         var cb = function(error, actual) {
           expect(error).to.exist;
-          expect(error.message).to.equal('BC-OA-0001: Missing tenant ID')
-          expect(actual).to.be.null;
-          testCallback();
-        }
-
-        fetchUserProfile(tkn, ctx, cb);
-      });
-
-    });
-
-  });
-
-  describe('provider specific', function() {
-
-    describe('sad paths', function() {
-
-      it('should fail gracefully when missing user', function(testCallback) {
-        var data = getData('userId', 'tenantId', 'name', 'email');
-        delete data.input.user;
-        var tkn = '';
-        var ctx = data.input;
-        var cb = function(error, actual) {
-          expect(error).to.exist;
-          expect(error.message).to.equal('BC-SLK-0000: Missing User Object')
-          expect(actual).to.be.null;
-          testCallback();
-        }
-
-        fetchUserProfile(tkn, ctx, cb);
-      });
-
-      it('should fail gracefully when missing team', function(testCallback) {
-        var data = getData('userId', 'tenantId', 'name', 'email');
-        delete data.input.team;
-        var tkn = '';
-        var ctx = data.input;
-        var cb = function(error, actual) {
-          expect(error).to.exist;
-          expect(error.message).to.equal('BC-SLK-0001: Missing Team/Tenant Object')
+          expect(error.message).to.equal('BC-OA-0002: Missing tenant ID')
           expect(actual).to.be.null;
           testCallback();
         }

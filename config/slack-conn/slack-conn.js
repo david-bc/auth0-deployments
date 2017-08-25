@@ -5,18 +5,8 @@ exports.fetchUserProfile = function(accessToken, ctx, cb) {
     return;
   }
 
-  var user = ctx.user;
-  var tenant = ctx.team;
-
-  if (!user) {
-    cb(new Error('BC-SLK-0001: Missing user'), null)
-    return;
-  } if (!tenant) {
-    cb(new Error('BC-SLK-0002: Missing tenant'), null)
-  }
-
-  var uid = user.id;
-  var tid = tenant.id;
+  var uid =ctx. user_id;
+  var tid = ctx.team_id;
 
   if (!uid) {
     cb(new Error('BC-OA-0001: Missing user ID'), null)
@@ -24,11 +14,11 @@ exports.fetchUserProfile = function(accessToken, ctx, cb) {
     cb(new Error('BC-OA-0002: Missing tenant ID'), null)
   } else {
     var profile = {
-      pro: 'slack-login',
+      pro: 'slack-conn',
+      ac: accessToken,
       uid: uid,
       tid: tid,
-      name: user.name,
-      email: user.email
+      name: ctx.name
     };
     cb(null, profile);
   }
