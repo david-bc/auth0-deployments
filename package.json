@@ -13,6 +13,7 @@
   "dependencies": {
     "chai": "^4.1.1",
     "fs": "0.0.1-security",
+    "jsonwebtoken": "^7.4.3",
     "lodash": "^4.17.4",
     "mocha": "^3.5.0",
     "path": "^0.12.7",

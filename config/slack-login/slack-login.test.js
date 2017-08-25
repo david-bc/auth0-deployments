@@ -1,11 +1,14 @@
 require('underscore');
 var chai = require('chai');
 var uuid = require('uuid');
-var SlackLogin = require('./slack-login');
+var jwt = require('jsonwebtoken');
+var _ = require('lodash');
+
+var fetchUserProfile = require('./slack-login').fetchUserProfile;
 
 var expect = chai.expect;
 var fetchUserProfile = SlackLogin.fetchUserProfile;
-var providerKey = 'slack-login';
+var providerKey = 'slack';
 
 function getExpected(userId, tenantId, name, email, accessToken) {
   return {

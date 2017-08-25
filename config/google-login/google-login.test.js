@@ -4,15 +4,15 @@ var uuid = require('uuid');
 var jwt = require('jsonwebtoken');
 var _ = require('lodash');
 
-var fetchUserProfile = require('./<%= name %>').fetchUserProfile;
+var fetchUserProfile = require('./google-login').fetchUserProfile;
 
 var expect = chai.expect;
-var providerKey = '<%= provider %>';
+var fetchUserProfile = SlackLogin.fetchUserProfile;
+var providerKey = 'google';
 
 function getExpected(userId, tenantId, name, email, accessToken) {
   return {
     pro: providerKey,
-    //ac: accessToken, // TODO: should this connector return the token?
     uid: userId,
     tid: tenantId,
     name: name,
@@ -26,10 +26,28 @@ function getExpected(userId, tenantId, name, email, accessToken) {
  */
 function getCtx(userId, tenantId, name, email) {
   return {
-    userId: userId,
-    tenantId: tenantId,
-    name: name,
-    email: email
+    "token_type": "Bearer",
+    "expires_in": 3600,
+    "id_token": jwt.sign(
+      {
+        "azp": "527985049325-thcejvsobpgql0fhg21rpgu3c2d8p7dv.apps.googleusercontent.com",
+        "aud": "527985049325-thcejvsobpgql0fhg21rpgu3c2d8p7dv.apps.googleusercontent.com",
+        "sub": userId,
+        "hd": tenantId,
+        "email": email,
+        "email_verified": true,
+        "at_hash": "2gOXFVHcw0Y-sEwQIWrREw",
+        "iss": "https://accounts.google.com",
+        "iat": 1503693497,
+        "exp": 1503697097,
+        "name": name,
+        "picture": "https://lh3.googleusercontent.com/-ytGeDlV1er4/AAAAAAAAAAI/AAAAAAAAAB0/FXCZESHLe2A/s96-c/photo.jpg",
+        "given_name": "David",
+        "family_name": "Esposito",
+        "locale": "en"
+      },
+      '<test-secret>'
+    )
   }
 }
 
@@ -40,28 +58,42 @@ function getData(userId, tenantId, name, email, accessToken) {
   }
 }
 
-describe('<%= name %>', function() {
+describe('google-login', function() {
 
   describe('provider specific', function() {
 
-    describe('happy paths', function() {
-
-      /**
-       *    TODO: Add happy path tests
-       */
-      it('should be replaced with real tests', function(testCallback) {
-        throw new Error("placeholder test should be replaced");
-      });
-
-    });
+    describe('happy paths', function() { });
 
     describe('sad paths', function() {
 
-      /**
-       *    TODO: Add sad path tests (graceful failure)
-       */
-      it('should be replaced with real tests', function(testCallback) {
-        throw new Error("placeholder test should be replaced");
+      it('should fail gracefully when id token is missing', function(testCallback) {
+        var tkn = uuid();
+        var data = getData(undefined, 'tenantId', 'name', 'email', tkn);
+        var ctx = data.input;
+        delete ctx.id_token;
+        var cb = function(error, actual) {
+          expect(error).to.exist;
+          expect(error.message).to.equal('BC-GOO-0000: Invalid missing id token')
+          expect(actual).to.be.null;
+          testCallback();
+        }
+
+        fetchUserProfile(tkn, ctx, cb);
+      });
+
+      it('should fail gracefully when id token is not an object', function(testCallback) {
+        var tkn = uuid();
+        var data = getData(undefined, 'tenantId', 'name', 'email', tkn);
+        var ctx = data.input;
+        ctx.id_token = 'probably not a valid jwt value';
+        var cb = function(error, actual) {
+          expect(error).to.exist;
+          expect(error.message).to.equal('BC-GOO-0001: Invalid id token format')
+          expect(actual).to.be.null;
+          testCallback();
+        }
+
+        fetchUserProfile(tkn, ctx, cb);
       });
 
     });

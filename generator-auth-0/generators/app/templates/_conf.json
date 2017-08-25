@@ -1,7 +1,7 @@
 {
   "options": {
-    "client_id": "core.auth0.<%= name %>.client.id",
-    "client_secret": "core.auth0.<%= name %>.client.secret",
+    "client_id": "core.auth0.<%= provider %>.client.id",
+    "client_secret": "core.auth0.<%= provider %>.client.secret",
     "scripts": {
       "fetchUserProfile": null
     },

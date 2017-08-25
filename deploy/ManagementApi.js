@@ -152,11 +152,11 @@ function upsertConfig(config) {
         const expected = _.cloneDeep(curr);
         const actual = _.cloneDeep(config.payload);
         actual.id = expected.id
-        delete expected.options.scripts.fetchUserProfile
-        delete actual.options.scripts.fetchUserProfile
-        delete expected.options.scope
-        delete actual.options.scope
+        delete expected.options
+        delete actual.options
         if (!_.isEqual(expected, actual)) {
+          console.log(JSON.stringify(expected));
+          console.log(JSON.stringify(actual));
           reject({
             outcome: 'FAILURE',
             method: 'VALIDATION',

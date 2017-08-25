@@ -1,5 +1,8 @@
 // generated with yo auth-0 v<%= version %>
 exports.fetchUserProfile = function(accessToken, ctx, cb) {
+  // var _ = require('lodash');
+  // var jwt = require('jsonwebtoken');
+  // var request = require('request');
   if (!ctx) {
     cb(new Error('BC-OA-0000: Invalid missing authentication information'), null)
     return;
@@ -14,7 +17,7 @@ exports.fetchUserProfile = function(accessToken, ctx, cb) {
     cb(new Error('BC-OA-0002: Missing tenant ID'), null)
   } else {
     var profile = {
-      pro: '<%= name %>',
+      pro: '<%= provider %>',
       uid: uid,
       tid: tid,
       name: ctx.name,

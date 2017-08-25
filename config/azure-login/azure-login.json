@@ -1,0 +1,17 @@
+{
+  "options": {
+    "client_id": "core.auth0.azure.client.id",
+    "client_secret": "core.auth0.azure.client.secret",
+    "scripts": {
+      "fetchUserProfile": null
+    },
+    "authorizationURL": "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
+    "tokenURL": "https://login.microsoftonline.com/common/oauth2/v2.0/token",
+    "scope": "openid profile email"
+  },
+  "strategy": "oauth2",
+  "name": "azure-login",
+  "enabled_clients": "auth0.clientId",
+  "is_domain_connection": false,
+  "realms": []
+}

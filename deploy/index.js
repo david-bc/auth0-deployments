@@ -18,5 +18,5 @@ Settings.init()
   })
   .then(
     successResolutions => successResolutions.forEach(resolution => console.log(resolution.name, ' => ', JSON.stringify(resolution))),
-    failureResolutions => failureResolutions.forEach(resolution => console.log(resolution.name, ' => ', JSON.stringify(resolution)))
+    failureResolutions => console.log(failureResolutions)
   )

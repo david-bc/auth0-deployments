@@ -1,0 +1,17 @@
+{
+  "options": {
+    "client_id": "core.auth0.google.client.id",
+    "client_secret": "core.auth0.google.client.secret",
+    "scripts": {
+      "fetchUserProfile": null
+    },
+    "authorizationURL": "https://accounts.google.com/o/oauth2/v2/auth",
+    "tokenURL": "https://www.googleapis.com/oauth2/v4/token",
+    "scope": "https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email"
+  },
+  "strategy": "oauth2",
+  "name": "google-login",
+  "enabled_clients": "auth0.clientId",
+  "is_domain_connection": false,
+  "realms": []
+}

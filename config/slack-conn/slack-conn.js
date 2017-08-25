@@ -14,7 +14,7 @@ exports.fetchUserProfile = function(accessToken, ctx, cb) {
     cb(new Error('BC-OA-0002: Missing tenant ID'), null)
   } else {
     var profile = {
-      pro: 'slack-conn',
+      pro: 'slack',
       ac: accessToken,
       uid: uid,
       tid: tid,
