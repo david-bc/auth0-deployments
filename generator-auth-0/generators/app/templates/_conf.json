@@ -1,0 +1,17 @@
+{
+  "options": {
+    "client_id": "core.auth0.<%= name %>.client.id",
+    "client_secret": "core.auth0.<%= name %>.client.secret",
+    "scripts": {
+      "fetchUserProfile": null
+    },
+    "authorizationURL": "<%= authUrl %>",
+    "tokenURL": "<%= tokenUrl %>",
+    "scope": "<%= scopes %>"
+  },
+  "strategy": "oauth2",
+  "name": "<%= name %>",
+  "enabled_clients": "auth0.clientId",
+  "is_domain_connection": false,
+  "realms": []
+}
