@@ -9,13 +9,11 @@ var fetchUserProfile = require('./google-login').fetchUserProfile;
 var expect = chai.expect;
 var providerKey = 'google';
 
-function getExpected(userId, tenantId, name, email, accessToken) {
+function getExpected(userId, tenantId) {
   return {
     pro: providerKey,
     uid: userId,
-    tid: tenantId,
-    name: name,
-    email: email
+    tid: tenantId
   }
 }
 
@@ -23,7 +21,7 @@ function getExpected(userId, tenantId, name, email, accessToken) {
  *    TODO: Update this to return the same structure as the
  *          OAuth SaaS provider.
  */
-function getCtx(userId, tenantId, name, email) {
+function getCtx(userId, tenantId) {
   return {
     "token_type": "Bearer",
     "expires_in": 3600,
@@ -33,13 +31,13 @@ function getCtx(userId, tenantId, name, email) {
         "aud": "527985049325-thcejvsobpgql0fhg21rpgu3c2d8p7dv.apps.googleusercontent.com",
         "sub": userId,
         "hd": tenantId,
-        "email": email,
+        "email": "david.esposito@bettercloud.com",
         "email_verified": true,
         "at_hash": "2gOXFVHcw0Y-sEwQIWrREw",
         "iss": "https://accounts.google.com",
         "iat": 1503693497,
         "exp": 1503697097,
-        "name": name,
+        "name": "David Esposito",
         "picture": "https://lh3.googleusercontent.com/-ytGeDlV1er4/AAAAAAAAAAI/AAAAAAAAAB0/FXCZESHLe2A/s96-c/photo.jpg",
         "given_name": "David",
         "family_name": "Esposito",
@@ -50,10 +48,10 @@ function getCtx(userId, tenantId, name, email) {
   }
 }
 
-function getData(userId, tenantId, name, email, accessToken) {
+function getData(userId, tenantId) {
   return {
-    input: getCtx(userId, tenantId, name, email),
-    expected: getExpected(userId, tenantId, name, email, accessToken)
+    input: getCtx(userId, tenantId),
+    expected: getExpected(userId, tenantId)
   }
 }
 
@@ -67,7 +65,7 @@ describe('google-login', function() {
 
       it('should fail gracefully when id token is missing', function(testCallback) {
         var tkn = uuid();
-        var data = getData(undefined, 'tenantId', 'name', 'email', tkn);
+        var data = getData(undefined, 'tenantId');
         var ctx = data.input;
         delete ctx.id_token;
         var cb = function(error, actual) {
@@ -82,7 +80,7 @@ describe('google-login', function() {
 
       it('should fail gracefully when id token is not an object', function(testCallback) {
         var tkn = uuid();
-        var data = getData(undefined, 'tenantId', 'name', 'email', tkn);
+        var data = getData(undefined, 'tenantId');
         var ctx = data.input;
         ctx.id_token = 'probably not a valid jwt value';
         var cb = function(error, actual) {
@@ -105,59 +103,7 @@ describe('google-login', function() {
 
       it('should return all fields when the full user is presented', function(testCallback) {
         var tkn = uuid();
-        var data = getData('userId', 'tenantId', 'name', 'email', tkn, tkn);
-        var ctx = data.input;
-        var cb = function(error, actual) {
-          expect(error).to.be.null;
-          expect(actual).to.deep.equal(data.expected)
-          testCallback();
-        }
-
-        fetchUserProfile(tkn, ctx, cb);
-      });
-
-      it('should not fail when missing email', function(testCallback) {
-        var tkn = uuid();
-        var data = getData('userId', 'tenantId', 'name', undefined, tkn);
-        var ctx = data.input;
-        var cb = function(error, actual) {
-          expect(error).to.be.null;
-          expect(actual).to.deep.equal(data.expected)
-          testCallback();
-        }
-
-        fetchUserProfile(tkn, ctx, cb);
-      });
-
-      it('should not fail when email is null', function(testCallback) {
-        var tkn = uuid();
-        var data = getData('userId', 'tenantId', 'name', null, tkn);
-        var ctx = data.input;
-        var cb = function(error, actual) {
-          expect(error).to.be.null;
-          expect(actual).to.deep.equal(data.expected)
-          testCallback();
-        }
-
-        fetchUserProfile(tkn, ctx, cb);
-      });
-
-      it('should not fail when missing name', function(testCallback) {
-        var tkn = uuid();
-        var data = getData('userId', 'tenantId', undefined, 'email', tkn);
-        var ctx = data.input;
-        var cb = function(error, actual) {
-          expect(error).to.be.null;
-          expect(actual).to.deep.equal(data.expected)
-          testCallback();
-        }
-
-        fetchUserProfile(tkn, ctx, cb);
-      });
-
-      it('should not fail when name is null', function(testCallback) {
-        var tkn = uuid();
-        var data = getData('userId', 'tenantId', null, 'email', tkn);
+        var data = getData('userId', 'tenantId');
         var ctx = data.input;
         var cb = function(error, actual) {
           expect(error).to.be.null;
@@ -174,7 +120,7 @@ describe('google-login', function() {
 
       it('should fail gracefully when missing authentication information', function(testCallback) {
         var tkn = uuid();
-        var data = getData(undefined, 'tenantId', 'name', 'email', tkn);
+        var data = getData(undefined, 'tenantId');
         var ctx = null;
         var cb = function(error, actual) {
           expect(error).to.exist;
@@ -188,7 +134,7 @@ describe('google-login', function() {
 
       it('should fail gracefully when missing user id', function(testCallback) {
         var tkn = uuid();
-        var data = getData(undefined, 'tenantId', 'name', 'email', tkn);
+        var data = getData(undefined, 'tenantId');
         var ctx = data.input;
         var cb = function(error, actual) {
           expect(error).to.exist;
@@ -202,7 +148,7 @@ describe('google-login', function() {
 
       it('should fail gracefully when user id is null', function(testCallback) {
         var tkn = uuid();
-        var data = getData(null, 'tenantId', 'name', 'email', tkn);
+        var data = getData(null, 'tenantId');
         var ctx = data.input;
         var cb = function(error, actual) {
           expect(error).to.exist;
@@ -216,7 +162,7 @@ describe('google-login', function() {
 
       it('should fail gracefully when missing tenant id', function(testCallback) {
         var tkn = uuid();
-        var data = getData('userId', undefined, 'name', 'email', tkn);
+        var data = getData('userId', undefined);
         var ctx = data.input;
         var cb = function(error, actual) {
           expect(error).to.exist;
@@ -230,7 +176,7 @@ describe('google-login', function() {
 
       it('should fail gracefully when tenant id is null', function(testCallback) {
         var tkn = uuid();
-        var data = getData('userId', undefined, 'name', 'email', tkn);
+        var data = getData('userId', undefined);
         var ctx = data.input;
         var cb = function(error, actual) {
           expect(error).to.exist;

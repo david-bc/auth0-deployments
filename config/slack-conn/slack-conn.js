@@ -15,10 +15,8 @@ exports.fetchUserProfile = function(accessToken, ctx, cb) {
   } else {
     var profile = {
       pro: 'slack',
-      ac: accessToken,
       uid: uid,
       tid: tid,
-      name: ctx.name
     };
     cb(null, profile);
   }

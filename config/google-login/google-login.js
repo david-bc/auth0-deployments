@@ -25,9 +25,7 @@ exports.fetchUserProfile = function(accessToken, ctx, cb) {
     cb(null, {
       pro: 'google',
       uid: payload.sub,
-      tid: payload.hd,
-      email: payload.email,
-      name: payload.name
+      tid: payload.hd
     });
   }
 }

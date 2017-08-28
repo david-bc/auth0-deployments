@@ -9,14 +9,11 @@ var fetchUserProfile = require('./slack-login').fetchUserProfile;
 var expect = chai.expect;
 var providerKey = 'slack';
 
-function getExpected(userId, tenantId, name, email, accessToken) {
+function getExpected(userId, tenantId) {
   return {
     pro: providerKey,
-    //ac: accessToken, // TODO: should this connector return the token?
     uid: userId,
-    tid: tenantId,
-    name: name,
-    email: email
+    tid: tenantId
   }
 }
 
@@ -24,12 +21,10 @@ function getExpected(userId, tenantId, name, email, accessToken) {
  *    TODO: Update this to return the same structure as the
  *          OAuth SaaS provider.
  */
-function getCtx(userId, tenantId, name, email) {
+function getCtx(userId, tenantId) {
   return {
     user: {
-      id: userId,
-      name: name,
-      email: email
+      id: userId
     },
     team: {
       id: tenantId
@@ -37,10 +32,10 @@ function getCtx(userId, tenantId, name, email) {
   }
 }
 
-function getData(userId, tenantId, name, email, accessToken) {
+function getData(userId, tenantId) {
   return {
-    input: getCtx(userId, tenantId, name, email),
-    expected: getExpected(userId, tenantId, name, email, accessToken)
+    input: getCtx(userId, tenantId),
+    expected: getExpected(userId, tenantId)
   }
 }
 
@@ -54,7 +49,7 @@ describe('slack-login', function() {
 
        it('should fail gracefully when missing user', function(testCallback) {
          var tkn = uuid();
-         var data = getData(undefined, 'tenantId', 'name', 'email', tkn);
+         var data = getData(undefined, 'tenantId');
          var ctx = data.input;
          delete ctx.user
          var cb = function(error, actual) {
@@ -69,7 +64,7 @@ describe('slack-login', function() {
 
           it('should fail gracefully when missing team', function(testCallback) {
             var tkn = uuid();
-            var data = getData(undefined, 'tenantId', 'name', 'email', tkn);
+            var data = getData(undefined, 'tenantId');
             var ctx = data.input;
             delete ctx.team
             var cb = function(error, actual) {
@@ -92,59 +87,7 @@ describe('slack-login', function() {
 
       it('should return all fields when the full user is presented', function(testCallback) {
         var tkn = uuid();
-        var data = getData('userId', 'tenantId', 'name', 'email', tkn, tkn);
-        var ctx = data.input;
-        var cb = function(error, actual) {
-          expect(error).to.be.null;
-          expect(actual).to.deep.equal(data.expected)
-          testCallback();
-        }
-
-        fetchUserProfile(tkn, ctx, cb);
-      });
-
-      it('should not fail when missing email', function(testCallback) {
-        var tkn = uuid();
-        var data = getData('userId', 'tenantId', 'name', undefined, tkn);
-        var ctx = data.input;
-        var cb = function(error, actual) {
-          expect(error).to.be.null;
-          expect(actual).to.deep.equal(data.expected)
-          testCallback();
-        }
-
-        fetchUserProfile(tkn, ctx, cb);
-      });
-
-      it('should not fail when email is null', function(testCallback) {
-        var tkn = uuid();
-        var data = getData('userId', 'tenantId', 'name', null, tkn);
-        var ctx = data.input;
-        var cb = function(error, actual) {
-          expect(error).to.be.null;
-          expect(actual).to.deep.equal(data.expected)
-          testCallback();
-        }
-
-        fetchUserProfile(tkn, ctx, cb);
-      });
-
-      it('should not fail when missing name', function(testCallback) {
-        var tkn = uuid();
-        var data = getData('userId', 'tenantId', undefined, 'email', tkn);
-        var ctx = data.input;
-        var cb = function(error, actual) {
-          expect(error).to.be.null;
-          expect(actual).to.deep.equal(data.expected)
-          testCallback();
-        }
-
-        fetchUserProfile(tkn, ctx, cb);
-      });
-
-      it('should not fail when name is null', function(testCallback) {
-        var tkn = uuid();
-        var data = getData('userId', 'tenantId', null, 'email', tkn);
+        var data = getData('userId', 'tenantId');
         var ctx = data.input;
         var cb = function(error, actual) {
           expect(error).to.be.null;
@@ -161,7 +104,7 @@ describe('slack-login', function() {
 
       it('should fail gracefully when missing authentication information', function(testCallback) {
         var tkn = uuid();
-        var data = getData(undefined, 'tenantId', 'name', 'email', tkn);
+        var data = getData(undefined, 'tenantId');
         var ctx = null;
         var cb = function(error, actual) {
           expect(error).to.exist;
@@ -175,7 +118,7 @@ describe('slack-login', function() {
 
       it('should fail gracefully when missing user id', function(testCallback) {
         var tkn = uuid();
-        var data = getData(undefined, 'tenantId', 'name', 'email', tkn);
+        var data = getData(undefined, 'tenantId');
         var ctx = data.input;
         var cb = function(error, actual) {
           expect(error).to.exist;
@@ -189,7 +132,7 @@ describe('slack-login', function() {
 
       it('should fail gracefully when user id is null', function(testCallback) {
         var tkn = uuid();
-        var data = getData(null, 'tenantId', 'name', 'email', tkn);
+        var data = getData(null, 'tenantId');
         var ctx = data.input;
         var cb = function(error, actual) {
           expect(error).to.exist;
@@ -203,7 +146,7 @@ describe('slack-login', function() {
 
       it('should fail gracefully when missing tenant id', function(testCallback) {
         var tkn = uuid();
-        var data = getData('userId', undefined, 'name', 'email', tkn);
+        var data = getData('userId', undefined);
         var ctx = data.input;
         var cb = function(error, actual) {
           expect(error).to.exist;
@@ -217,7 +160,7 @@ describe('slack-login', function() {
 
       it('should fail gracefully when tenant id is null', function(testCallback) {
         var tkn = uuid();
-        var data = getData('userId', undefined, 'name', 'email', tkn);
+        var data = getData('userId', undefined);
         var ctx = data.input;
         var cb = function(error, actual) {
           expect(error).to.exist;

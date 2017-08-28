@@ -29,9 +29,7 @@ exports.fetchUserProfile = function(accessToken, ctx, cb) {
     var profile = {
       pro: 'azure',
       uid: uid,
-      tid: tid,
-      name: token.name,
-      email: token.preferred_username
+      tid: tid
     };
     cb(null, profile);
   }

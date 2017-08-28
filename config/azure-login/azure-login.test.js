@@ -9,13 +9,11 @@ var fetchUserProfile = require('./azure-login').fetchUserProfile;
 var expect = chai.expect;
 var providerKey = 'azure';
 
-function getExpected(userId, tenantId, name, email, accessToken) {
+function getExpected(userId, tenantId) {
   return {
     pro: providerKey,
     uid: userId,
-    tid: tenantId,
-    name: name,
-    email: email
+    tid: tenantId
   }
 }
 
@@ -23,7 +21,7 @@ function getExpected(userId, tenantId, name, email, accessToken) {
  *    TODO: Update this to return the same structure as the
  *          OAuth SaaS provider.
  */
-function getCtx(userId, tenantId, name, email) {
+function getCtx(userId, tenantId) {
   return {
     id_token: jwt.sign(
       {
@@ -33,9 +31,9 @@ function getCtx(userId, tenantId, name, email) {
         "nbf": 1503696545,
         "exp": 1503700445,
         "aio": "ATQAy/8EAAAA21+UoX+4NsYhaxo/EThN6vknGQpdfxaWCC0Syv6Gs985mh4Lmj6zPcTgL0jqjVOb",
-        "name": name,
+        "name": "David Esposito",
         "oid": userId,
-        "preferred_username": email,
+        "preferred_username": "david.esposito@bettercloud.com",
         "sub": "zGvygs8EVIDxliPJ-ZV7Ho-egTbO-O43oqOK9O4GCJs",
         "tid": tenantId,
         "ver": "2.0"
@@ -45,10 +43,10 @@ function getCtx(userId, tenantId, name, email) {
   }
 }
 
-function getData(userId, tenantId, name, email, accessToken) {
+function getData(userId, tenantId) {
   return {
-    input: getCtx(userId, tenantId, name, email),
-    expected: getExpected(userId, tenantId, name, email, accessToken)
+    input: getCtx(userId, tenantId),
+    expected: getExpected(userId, tenantId)
   }
 }
 
@@ -62,7 +60,7 @@ describe('azure-login', function() {
 
       it('should fail gracefully when missing id token', function(testCallback) {
         var tkn = uuid();
-        var data = getData(undefined, 'tenantId', 'name', 'email', tkn);
+        var data = getData(undefined, 'tenantId');
         var ctx = data.input;
         delete ctx.id_token
         var cb = function(error, actual) {
@@ -77,7 +75,7 @@ describe('azure-login', function() {
 
       it('should fail gracefully when invalid id token format', function(testCallback) {
         var tkn = uuid();
-        var data = getData(undefined, 'tenantId', 'name', 'email', tkn);
+        var data = getData(undefined, 'tenantId');
         var ctx = data.input;
         ctx.id_token = 'Not a valid JWT'
         var cb = function(error, actual) {
@@ -100,59 +98,7 @@ describe('azure-login', function() {
 
       it('should return all fields when the full user is presented', function(testCallback) {
         var tkn = uuid();
-        var data = getData('userId', 'tenantId', 'name', 'email', tkn, tkn);
-        var ctx = data.input;
-        var cb = function(error, actual) {
-          expect(error).to.be.null;
-          expect(actual).to.deep.equal(data.expected)
-          testCallback();
-        }
-
-        fetchUserProfile(tkn, ctx, cb);
-      });
-
-      it('should not fail when missing email', function(testCallback) {
-        var tkn = uuid();
-        var data = getData('userId', 'tenantId', 'name', undefined, tkn);
-        var ctx = data.input;
-        var cb = function(error, actual) {
-          expect(error).to.be.null;
-          expect(actual).to.deep.equal(data.expected)
-          testCallback();
-        }
-
-        fetchUserProfile(tkn, ctx, cb);
-      });
-
-      it('should not fail when email is null', function(testCallback) {
-        var tkn = uuid();
-        var data = getData('userId', 'tenantId', 'name', null, tkn);
-        var ctx = data.input;
-        var cb = function(error, actual) {
-          expect(error).to.be.null;
-          expect(actual).to.deep.equal(data.expected)
-          testCallback();
-        }
-
-        fetchUserProfile(tkn, ctx, cb);
-      });
-
-      it('should not fail when missing name', function(testCallback) {
-        var tkn = uuid();
-        var data = getData('userId', 'tenantId', undefined, 'email', tkn);
-        var ctx = data.input;
-        var cb = function(error, actual) {
-          expect(error).to.be.null;
-          expect(actual).to.deep.equal(data.expected)
-          testCallback();
-        }
-
-        fetchUserProfile(tkn, ctx, cb);
-      });
-
-      it('should not fail when name is null', function(testCallback) {
-        var tkn = uuid();
-        var data = getData('userId', 'tenantId', null, 'email', tkn);
+        var data = getData('userId', 'tenantId');
         var ctx = data.input;
         var cb = function(error, actual) {
           expect(error).to.be.null;
@@ -169,7 +115,7 @@ describe('azure-login', function() {
 
       it('should fail gracefully when missing authentication information', function(testCallback) {
         var tkn = uuid();
-        var data = getData(undefined, 'tenantId', 'name', 'email', tkn);
+        var data = getData(undefined, 'tenantId');
         var ctx = null;
         var cb = function(error, actual) {
           expect(error).to.exist;
@@ -183,7 +129,7 @@ describe('azure-login', function() {
 
       it('should fail gracefully when missing user id', function(testCallback) {
         var tkn = uuid();
-        var data = getData(undefined, 'tenantId', 'name', 'email', tkn);
+        var data = getData(undefined, 'tenantId');
         var ctx = data.input;
         var cb = function(error, actual) {
           expect(error).to.exist;
@@ -197,7 +143,7 @@ describe('azure-login', function() {
 
       it('should fail gracefully when user id is null', function(testCallback) {
         var tkn = uuid();
-        var data = getData(null, 'tenantId', 'name', 'email', tkn);
+        var data = getData(null, 'tenantId');
         var ctx = data.input;
         var cb = function(error, actual) {
           expect(error).to.exist;
@@ -211,7 +157,7 @@ describe('azure-login', function() {
 
       it('should fail gracefully when missing tenant id', function(testCallback) {
         var tkn = uuid();
-        var data = getData('userId', undefined, 'name', 'email', tkn);
+        var data = getData('userId', undefined);
         var ctx = data.input;
         var cb = function(error, actual) {
           expect(error).to.exist;
@@ -225,7 +171,7 @@ describe('azure-login', function() {
 
       it('should fail gracefully when tenant id is null', function(testCallback) {
         var tkn = uuid();
-        var data = getData('userId', undefined, 'name', 'email', tkn);
+        var data = getData('userId', undefined);
         var ctx = data.input;
         var cb = function(error, actual) {
           expect(error).to.exist;
