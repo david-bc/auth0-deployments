@@ -17,6 +17,29 @@ inside some properties.
 - `options.client_secret`
 - `enabled_clients`
 
+Example config:
+
+```
+{
+  "options": {
+    "client_id": "core.auth0.slack.client.id",
+    "client_secret": "core.auth0.slack.client.secret",
+    "scripts": {
+      "fetchUserProfile": null
+    },
+    "authorizationURL": "https://slack.com/oauth/authorize",
+    "tokenURL": "https://slack.com/api/oauth.access",
+    "scope": "identity.basic identity.email identity.avatar"
+  },
+  "strategy": "oauth2",
+  "name": "slack-login",
+  "enabled_clients": "auth0.clientId",
+  "is_domain_connection": false,
+  "realms": []
+}
+
+```
+
 ## Local
 
 These values are pulled from `dev.settings.json`.
