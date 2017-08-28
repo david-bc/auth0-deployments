@@ -19,9 +19,7 @@ exports.fetchUserProfile = function(accessToken, ctx, cb) {
     var profile = {
       pro: '<%= provider %>',
       uid: uid,
-      tid: tid,
-      name: ctx.name,
-      email: ctx.email
+      tid: tid
     };
     cb(null, profile);
   }
