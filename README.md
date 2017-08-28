@@ -4,7 +4,7 @@
 
 Tests are found along side their respective scripts:  `/config/<provider>/<provider>.test.js`
 
-```
+```shell
 npm test
 ```
 
@@ -19,11 +19,11 @@ inside some properties.
 
 Example config:
 
-```
+```javascript
 {
   "options": {
-    "client_id": "core.auth0.slack.client.id",
-    "client_secret": "core.auth0.slack.client.secret",
+    "client_id": "core.auth0.slack.client.id",          // config
+    "client_secret": "core.auth0.slack.client.secret",  // config
     "scripts": {
       "fetchUserProfile": null
     },
@@ -33,7 +33,7 @@ Example config:
   },
   "strategy": "oauth2",
   "name": "slack-login",
-  "enabled_clients": "auth0.clientId",
+  "enabled_clients": "auth0.clientId",                   // config
   "is_domain_connection": false,
   "realms": []
 }
@@ -46,14 +46,14 @@ These values are pulled from `dev.settings.json`.
 
 Example config file:
 
-```
+```javascript
 {
   "core": {
     "auth0": {
       "slack": {
         "client": {
-          "id": "asdf-123-qwerty-<slack-client-id>",
-          "secret": "asdf-123-qwerty-<slack-client-secret>"
+          "id": "asdf-123-qwerty-<slack-client-id>",          // populated by yo
+          "secret": "asdf-123-qwerty-<slack-client-secret>"   // populated by yo
         }
       },
       "google": {
@@ -86,6 +86,29 @@ Example config file:
   }
 }
 ```
+
+### Auth Client
+
+- `auth0.clientId`
+- `auth0.domain`
+
+![](/assets/client01-min.png)
+
+![](/assets/client02-min.png)
+
+### Deployment Client
+
+- `auth0.api.clientId`
+- `auth0.api.clientSecret`
+
+![](/assets/deployment01-min.png)
+
+![](/assets/deployment02-min.png)
+
+![](/assets/deployment03-min.png)
+
+![](/assets/deployment04-min.png)
+
 
 ## Deployed: Non-Prod and Production
 
