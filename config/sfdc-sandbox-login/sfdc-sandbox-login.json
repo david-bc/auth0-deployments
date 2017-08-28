@@ -1,0 +1,17 @@
+{
+  "options": {
+    "client_id": "core.auth0.salesforce.client.id",
+    "client_secret": "core.auth0.salesforce.client.secret",
+    "scripts": {
+      "fetchUserProfile": null
+    },
+    "authorizationURL": "https://test.salesforce.com/services/oauth2/authorize",
+    "tokenURL": "https://test.salesforce.com/services/oauth2/token",
+    "scope": "id openid"
+  },
+  "strategy": "oauth2",
+  "name": "sfdc-sandbox-login",
+  "enabled_clients": "auth0.clientId",
+  "is_domain_connection": false,
+  "realms": []
+}
